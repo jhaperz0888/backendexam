@@ -14,9 +14,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
 
 
@@ -25,11 +25,10 @@ Route::group([
 ], function () {
     Route::post('login', 'api\apiAuthController@login');
     Route::post('register', 'api\apiAuthController@register');
-  
-    Route::group([
+});
+
+Route::group([
       'middleware' => 'auth:api'
     ], function() {
-        Route::get('logout', 'api\apiAuthController@logout');
-        Route::get('user', 'api\apiAuthController@user');
-    });
+        Route::post('order', 'api\apiProductsController@order');
 });
