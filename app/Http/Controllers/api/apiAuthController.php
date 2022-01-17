@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Libraries\Helper;
+use Illuminate\Support\Facades\Auth;
 
 class apiAuthController extends Controller
 {
@@ -38,7 +39,7 @@ class apiAuthController extends Controller
         }else{
 
         	$user = array(
-                            'name' => null,
+                            // 'name' => null,
                             'email' => $request->email,
                             'password' => bcrypt($request->password),
                             'created_at' => Helper::getDateTimePHP(),
@@ -52,5 +53,27 @@ class apiAuthController extends Controller
 	        ], 201);
 
 	    }
+    }
+
+    public function login(Request $request)
+    {
+
+        $credentials = request(['email', 'password']);
+
+        if(!Auth::attempt($credentials)) {
+            return response()->json(array('message' => "Invalid credentials"),401);
+        }else{
+                $user = $request->user();
+
+                $tokenResult = $user->createToken('Personal-Access-Token');
+
+                $token = $tokenResult->token;
+
+                $token->save();
+
+                return response()->json([
+                    'access_token' => $tokenResult->accessToken
+                ], 201);
+        }
     }
 }
